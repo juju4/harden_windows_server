@@ -40,8 +40,8 @@ install:
     }
 - cmd: if [%TARGET%]==[spec] (
     bundle install --jobs 4 --retry 2 --without system_tests build &&
-    type Gemfile.lock &&
-    type nul > C:\ProgramData\PuppetLabs\puppet\etc\hiera.yaml)
+    type Gemfile.lock)
+- type nul > C:\ProgramData\PuppetLabs\puppet\etc\hiera.yaml
 build: off
 test_script:
 - cmd: if [%TARGET%]==[spec] (
