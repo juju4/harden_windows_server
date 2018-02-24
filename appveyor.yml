@@ -56,6 +56,9 @@ test_script:
     $msiPath = "$($env:USERPROFILE)\puppet-agent-5.4.0-x86.msi.msi"
     (New-Object Net.WebClient).DownloadFile('https://downloads.puppetlabs.com/windows/puppet5/puppet-agent-5.4.0-x86.msi', $msiPath)
     cmd /c start /wait msiexec /i $msiPath /q
+    }
+- ps: |
+    if ($env:TARGET -eq 'puppetrun') {
     puppet config print config
     puppet config print modulepath
     puppet module install puppetlabs-windows
