@@ -41,17 +41,15 @@ install:
 - type nul > C:\ProgramData\PuppetLabs\puppet\etc\hiera.yaml
 build: off
 test_script:
-- cmd:
-    if [%TARGET%}==[spec] (
-    bundle exec puppet -V
-    ruby -v
-    gem -v
-    bundle -v
-    bundle exec rake spec
-    )
+- cmd: if [%TARGET%]==[spec] (
+    bundle exec puppet -V &&
+    ruby -v &&
+    gem -v &&
+    bundle -v &&
+    bundle exec rake spec)
 # this will play puppet modules from upstream, not local one
 - ps: |
-    if [%TARGET%]==[puppetrun] (
+    if ($env:TARGET -eq 'puppetrun') {
     $msiPath = "$($env:USERPROFILE)\puppet-agent-5.4.0-x86.msi.msi"
     (New-Object Net.WebClient).DownloadFile('https://downloads.puppetlabs.com/windows/puppet5/puppet-agent-5.4.0-x86.msi', $msiPath)
     cmd /c start /wait msiexec /i $msiPath /q
@@ -61,7 +59,7 @@ test_script:
     puppet module install autostructure-harden_windows_server
     facter
     puppet apply -e "include ::harden_windows_server" --disable_warnings deprecations --verbose
-    )
+    }
 notifications:
 - provider: Email
   to:
