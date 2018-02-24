@@ -13,15 +13,22 @@ environment:
   matrix:
   - PUPPET_GEM_VERSION: ~> 4.0
     RUBY_VER: 22
+    TARGET: spec
   - PUPPET_GEM_VERSION: ~> 4.0
     RUBY_VER: 22-x64
+    TARGET: spec
 # https://github.com/ffi/ffi/issues/602#issuecomment-363364015  Ruby Gems Version is limited to < 2.5 on windows.
   - PUPPET_GEM_VERSION: ~> 5.0
     RUBY_VER: 24
+    TARGET: spec
   - PUPPET_GEM_VERSION: ~> 5.0
     RUBY_VER: 24-x64
+    TARGET: spec
   - PUPPET_GEM_VERSION: 4.7.1
     RUBY_VER: 22-x64
+    TARGET: spec
+  - PUPPET_GEM_VERSION:
+    TARGET: puppetrun
 matrix:
   fast_finish: true
 install:
@@ -34,12 +41,17 @@ install:
 - type nul > C:\ProgramData\PuppetLabs\puppet\etc\hiera.yaml
 build: off
 test_script:
-- bundle exec puppet -V
-- ruby -v
-- gem -v
-- bundle -v
-- bundle exec rake spec
+- cmd:
+    if [%TARGET%}==[spec] (
+    bundle exec puppet -V
+    ruby -v
+    gem -v
+    bundle -v
+    bundle exec rake spec
+    )
+# this will play puppet modules from upstream, not local one
 - ps: |
+    if [%TARGET%]==[puppetrun] (
     $msiPath = "$($env:USERPROFILE)\puppet-agent-5.4.0-x86.msi.msi"
     (New-Object Net.WebClient).DownloadFile('https://downloads.puppetlabs.com/windows/puppet5/puppet-agent-5.4.0-x86.msi', $msiPath)
     cmd /c start /wait msiexec /i $msiPath /q
@@ -49,6 +61,7 @@ test_script:
     puppet module install autostructure-harden_windows_server
     facter
     puppet apply -e "include ::harden_windows_server" --disable_warnings deprecations --verbose
+    )
 notifications:
 - provider: Email
   to:
