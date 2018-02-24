@@ -34,11 +34,14 @@ matrix:
 install:
 - SET PATH=C:\Ruby%RUBY_VER%\bin;%PATH%
 - ps: |
+    if ($env:TARGET -eq 'spec') {
     gem list openssl
     ruby -ropenssl -e 'puts \"OpenSSL Version - #{OpenSSL::OPENSSL_VERSION}\"; puts \"OpenSSL Library Version - #{OpenSSL::OPENSSL_LIBRARY_VERSION}\"'
-- bundle install --jobs 4 --retry 2 --without system_tests build
-- type Gemfile.lock
-- type nul > C:\ProgramData\PuppetLabs\puppet\etc\hiera.yaml
+    }
+- cmd: if [%TARGET%]==[spec] (
+    bundle install --jobs 4 --retry 2 --without system_tests build &&
+    type Gemfile.lock &&
+    type nul > C:\ProgramData\PuppetLabs\puppet\etc\hiera.yaml)
 build: off
 test_script:
 - cmd: if [%TARGET%]==[spec] (
