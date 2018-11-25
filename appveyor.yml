@@ -21,14 +21,18 @@ install:
 - ps: |
     (New-Object Net.WebClient).DownloadFile('https://github.com/juju4/harden_windows_server/archive/devel-puppetrun.tar.gz', "$($env:USERPROFILE)\autostructure-harden_windows_server-HEAD.tar.gz")
 - ps: |
+    (New-Object Net.WebClient).DownloadFile('https://github.com/juju4/puppet-kpn-local_security_policy/archive/master.tar.gz', "$($env:USERPROFILE)\kpn-local_security_policy-HEAD.tar.gz")
+- ps: |
     puppet config print config
     puppet config print modulepath
     puppet module install puppetlabs-windows
+    puppet module install puppetlabs-stdlib
     #puppet module install autostructure-harden_windows_server
     # https://puppet.com/docs/puppet/5.3/modules_installing.html#installing-from-a-release-tarball
     #puppet module install ayohrling-local_security_policy
     #puppet module install jonono-auditpol
-    puppet module install kpn-local_security_policy
+    #puppet module install kpn-local_security_policy
+    puppet module install "$($env:USERPROFILE)\kpn-local_security_policy-HEAD.tar.gz" --ignore-dependencies
     puppet module install autostructure-auditpol
     puppet module install "$($env:USERPROFILE)\autostructure-harden_windows_server-HEAD.tar.gz" --ignore-dependencies
 - copy /y hiera.yaml C:\ProgramData\PuppetLabs\puppet\etc\hiera.yaml
