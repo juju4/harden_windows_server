@@ -37,6 +37,12 @@ test_script:
 after_test:
 - cmd: c:\opscode\inspec\bin\inspec.bat exec https://github.com/dev-sec/windows-baseline/
 
+on_failure:
+- cmd: puppet module list --tree
+- cmd: facter
+- ps: $PSVersionTable.PSVersion
+- ps: Get-Content -tail 1000 "C:\Windows\security\logs\scesrv.log"
+
 notifications:
 - provider: Email
   to:
